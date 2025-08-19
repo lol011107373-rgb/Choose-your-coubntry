@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>اختر دولتك</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #f7fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --pastel: #dbeafe;          /* نفس اللون لكل الأزرار (باستيل فاتح) */
+      --pastel-hover: #bfdbfe;    /* درجة أغمق عند المرور */
+      --accent: #94a3b8;
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(2, 6, 23, .08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Cairo", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 600px at 100% -20%, #eef2ff 10%, transparent 60%),
+        radial-gradient(1000px 600px at -10% 120%, #f0f9ff 10%, transparent 60%),
+        var(--bg);
+      color:var(--text);
+      min-height:100dvh;
+      display:flex; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .wrap{
+      width:100%;
+      max-width:780px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:calc(var(--radius) + 6px);
+      box-shadow:var(--shadow);
+      padding:28px;
+      border:1px solid #e2e8f0;
+    }
+    header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      margin:0 0 8px 0;
+      font-size:clamp(22px, 4.2vw, 34px);
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    p.lead{
+      margin:0 auto 6px;
+      color:var(--muted);
+      font-size:clamp(14px, 2.8vw, 16px);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(1, 1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+    @media (min-width:520px){
+      .grid{ grid-template-columns:repeat(2, 1fr); }
+    }
+    @media (min-width:860px){
+      .grid{ grid-template-columns:repeat(3, 1fr); }
+    }
+    a.btn{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      text-decoration:none;
+      background:var(--pastel);
+      padding:14px 16px;
+      border-radius:var(--radius);
+      border:1px solid #c7d2fe;
+      transition:transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+      color:#0b1324;
+      font-weight:700;
+      letter-spacing:.2px;
+      box-shadow:0 4px 14px rgba(15, 23, 42, .06);
+    }
+    a.btn:hover{ background:var(--pastel-hover); border-color:#a5b4fc; transform:translateY(-1px) }
+    a.btn:active{ transform:translateY(0) scale(.99) }
+    .badge{
+      font-size:12px;
+      font-weight:700;
+      padding:6px 10px;
+      background:#eef2ff;
+      border:1px solid #c7d2fe;
+      border-radius:999px;
+      color:#243b53;
+      white-space:nowrap;
+    }
+    .country{
+      display:flex; align-items:center; gap:10px;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .flag{
+      width:20px; height:20px; border-radius:6px; background:#e2e8f0; display:inline-block;
+      box-shadow:inset 0 0 0 1px rgba(2,6,23,.06);
+    }
+    footer{
+      text-align:center; color:var(--accent); font-size:12px; margin-top:14px;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <header>
+        <h1>إختر دولتك و قم بالمهمة و إلى الجائزة</h1>
+        <p class="lead">اضغط على بلدك ثم نفّذ المهمة المناسبة لنظامك (أبل أو اندرويد).</p>
+      </header>
+
+      <div class="grid">
+        <!-- المغرب (اندرويد) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=69381" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>المغرب <span class="badge">(اندرويد)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- مصر (أبل) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=67233" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>مصر <span class="badge">(أبل)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- العراق (اندرويد) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=66098" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>العراق <span class="badge">(اندرويد)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- الأردن (أبل) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=56091" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>الأردن <span class="badge">(أبل)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- الأردن (اندرويد) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=56090" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>الأردن <span class="badge">(اندرويد)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- الكويت (عام – رابط واحد) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=39764" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>الكويت <span class="badge">(أبل/اندرويد)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- لبنان (اندرويد) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=67192" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>لبنان <span class="badge">(اندرويد)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- عُمان (أبل) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=70873" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>عُمان <span class="badge">(أبل)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- عُمان (اندرويد) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=70872" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>عُمان <span class="badge">(اندرويد)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- السعودية (أبل) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=70436" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>السعودية <span class="badge">(أبل)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- تونس (عام – رابط واحد) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=65271" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>تونس <span class="badge">(أبل/اندرويد)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- الإمارات (أبل) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=71390" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>الإمارات <span class="badge">(أبل)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+
+        <!-- الإمارات (اندرويد) -->
+        <a class="btn" href="https://singingfiles.com/show.php?l=0&u=2439739&id=71389" target="_blank" rel="noopener">
+          <span class="country">
+            <span class="flag" aria-hidden="true"></span>
+            <span>الإمارات <span class="badge">(اندرويد)</span></span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </a>
+      </div>
+
+      <footer>بعد إتمام المهمة، احتفظ بلقطة الشاشة وأرسلها لإستلام الجائزة 🎁</footer>
+    </section>
+  </main>
+</body>
+</html>
