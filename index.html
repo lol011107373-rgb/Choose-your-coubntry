@@ -139,27 +139,17 @@
     </div>
   </div>
   <script>
-    let offers = [];
+    const offers = [
+      { id: 1, title: "Offer 1", link: "https://example.com/offer1", country: ["US", "CA", "UK"], payout: "$5.00", os: "Android" },
+      { id: 2, title: "Offer 2", link: "https://example.com/offer2", country: ["US", "AU"], payout: "$3.00", os: "iOS" },
+      { id: 3, title: "Offer 3", link: "https://example.com/offer3", country: ["UK", "FR"], payout: "$7.00", os: "Android|iOS" }
+    ];
     let countries = new Set();
 
-    function loadCSV(file) {
-      fetch(file)
-        .then(response => response.text())
-        .then(data => {
-          const rows = data.split('\n').slice(1);
-          offers = rows.map(row => {
-            const [id, title, description, link, country, payout, os] = row.split(',');
-            const countryList = country ? country.split('|') : [];
-            countryList.forEach(c => countries.add(c.trim()));
-            return { id, title, description, link, country: countryList, payout, os };
-          });
-          populateCountries();
-          displayOffers(offers);
-        })
-        .catch(error => console.error('Error loading CSV:', error));
-    }
-
     function populateCountries() {
+      offers.forEach(offer => {
+        offer.country.forEach(c => countries.add(c));
+      });
       const select = document.getElementById('countryFilter');
       countries.forEach(country => {
         const option = document.createElement('option');
@@ -195,7 +185,8 @@
       displayOffers(filteredOffers);
     }
 
-    loadCSV('offers.csv');
+    populateCountries();
+    displayOffers(offers);
   </script>
 </body>
 </html>
