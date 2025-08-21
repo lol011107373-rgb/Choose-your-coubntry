@@ -10,8 +10,8 @@
       --card: #ffffff;
       --text: #0f172a;
       --muted: #64748b;
-      --pastel: #dbeafe;          /* نفس اللون لكل الأزرار (باستيل فاتح) */
-      --pastel-hover: #bfdbfe;    /* درجة أغمق عند المرور */
+      --pastel: #dbeafe;
+      --pastel-hover: #bfdbfe;
       --accent: #94a3b8;
       --radius: 18px;
       --shadow: 0 10px 30px rgba(2, 6, 23, .08);
@@ -104,6 +104,20 @@
     footer{
       text-align:center; color:var(--accent); font-size:12px; margin-top:14px;
     }
+    .filter{
+      margin-bottom:20px;
+      display:flex; justify-content:center;
+    }
+    select{
+      padding:10px;
+      font-size:16px;
+      border-radius:8px;
+      border:1px solid #c7d2fe;
+      background:var(--pastel);
+      color:#0b1324;
+      width:100%;
+      max-width:300px;
+    }
   </style>
 </head>
 <body>
@@ -113,4 +127,75 @@
         <h1>Complete offers in your country to win prizes</h1>
         <p class="lead">Choose your country and OS to get started</p>
       </header>
-      <div class="grid">
+      <div class="filter">
+        <select id="countryFilter" onchange="filterOffers()">
+          <option value="">Select a country</option>
+        </select>
+      </div>
+      <div class="grid" id="offerGrid"></div>
+      <footer>
+        <p>Powered by CPA Grip</p>
+      </footer>
+    </div>
+  </div>
+  <script>
+    let offers = [];
+    let countries = new Set();
+
+    function loadCSV(file) {
+      fetch(file)
+        .then(response => response.text())
+        .then(data => {
+          const rows = data.split('\n').slice(1);
+          offers = rows.map(row => {
+            const [id, title, description, link, country, payout, os] = row.split(',');
+            const countryList = country ? country.split('|') : [];
+            countryList.forEach(c => countries.add(c.trim()));
+            return { id, title, description, link, country: countryList, payout, os };
+          });
+          populateCountries();
+          displayOffers(offers);
+        })
+        .catch(error => console.error('Error loading CSV:', error));
+    }
+
+    function populateCountries() {
+      const select = document.getElementById('countryFilter');
+      countries.forEach(country => {
+        const option = document.createElement('option');
+        option.value = country;
+        option.textContent = country;
+        select.appendChild(option);
+      });
+    }
+
+    function displayOffers(offersToDisplay) {
+      const grid = document.getElementById('offerGrid');
+      grid.innerHTML = '';
+      offersToDisplay.forEach(offer => {
+        const offerElement = document.createElement('a');
+        offerElement.href = offer.link;
+        offerElement.className = 'btn';
+        offerElement.innerHTML = `
+          <div class="country">
+            <span class="flag"></span>
+            <span>${offer.title}</span>
+          </div>
+          <span class="badge">${offer.payout}</span>
+        `;
+        grid.appendChild(offerElement);
+      });
+    }
+
+    function filterOffers() {
+      const selectedCountry = document.getElementById('countryFilter').value;
+      const filteredOffers = selectedCountry
+        ? offers.filter(offer => offer.country.includes(selectedCountry))
+        : offers;
+      displayOffers(filteredOffers);
+    }
+
+    loadCSV('offers.csv');
+  </script>
+</body>
+</html>
