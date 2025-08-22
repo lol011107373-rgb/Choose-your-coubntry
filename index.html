@@ -26,7 +26,7 @@
         var(--bg);
       color:var(--text);
       min-height:100dvh;
-      display:flex; align-items:center; justify-content:center;
+      display:flex; align-items:flex-start; justify-content:center;
       padding:24px;
     }
     .wrap{ width:100%; max-width:780px; }
@@ -36,10 +36,46 @@
       box-shadow:var(--shadow);
       padding:28px;
       border:1px solid #e2e8f0;
+      position:relative;
     }
-    header{text-align:center; margin-bottom:20px;}
-    h1{ margin:0 0 8px 0; font-size:clamp(22px, 4.2vw, 34px); font-weight:800; }
-    p.lead{ margin:0 auto 6px; color:var(--muted); font-size:clamp(14px, 2.8vw, 16px); }
+    header{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:20px;
+    }
+    h1{ margin:0; font-size:clamp(22px, 4.2vw, 34px); font-weight:800; }
+    .search-box{
+      position:relative;
+      max-width:250px;
+      width:100%;
+    }
+    .search-input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid #c7d2fe;
+      background:var(--pastel);
+      font-size:14px;
+    }
+    .autocomplete-list{
+      position:absolute;
+      top:100%;
+      left:0;
+      right:0;
+      background:white;
+      border:1px solid #c7d2fe;
+      border-radius:8px;
+      box-shadow:var(--shadow);
+      max-height:200px;
+      overflow-y:auto;
+      z-index:1000;
+    }
+    .autocomplete-item{
+      padding:10px;
+      cursor:pointer;
+    }
+    .autocomplete-item:hover{
+      background:var(--pastel-hover);
+    }
     .grid{ display:grid; grid-template-columns:repeat(1, 1fr); gap:12px; margin-top:16px; }
     @media (min-width:520px){ .grid{ grid-template-columns:repeat(2, 1fr);} }
     @media (min-width:860px){ .grid{ grid-template-columns:repeat(3, 1fr);} }
@@ -70,65 +106,118 @@
     <div class="card">
       <header>
         <h1>Available Offers</h1>
-        <p class="lead">Choose your offer below</p>
+        <div class="search-box">
+          <input type="text" id="search" class="search-input" placeholder="Search country...">
+          <div id="autocomplete" class="autocomplete-list" style="display:none;"></div>
+        </div>
       </header>
       <div id="offers" class="grid"></div>
     </div>
   </div>
 
   <script>
-    // Country code to name map
     const countryMap = {
-      US: "United States", FR: "France", PT: "Portugal", TW: "Taiwan", IL: "Israel",
-      MD: "Moldova", AR: "Argentina", SA: "Saudi Arabia", NZ: "New Zealand", CA: "Canada",
-      CM: "Cameroon", GB: "United Kingdom", CR: "Costa Rica", LK: "Sri Lanka", LU: "Luxembourg",
-      ES: "Spain", SR: "Suriname", ZA: "South Africa", MX: "Mexico", CI: "Ivory Coast",
-      PS: "Palestine", TR: "Turkey", CL: "Chile", IQ: "Iraq", VN: "Vietnam", AL: "Albania",
-      BD: "Bangladesh", TN: "Tunisia", MA: "Morocco", CO: "Colombia", AM: "Armenia",
-      NG: "Nigeria", RO: "Romania", EG: "Egypt", NP: "Nepal", AT: "Austria", PK: "Pakistan",
-      LY: "Libya", VE: "Venezuela", PH: "Philippines", RU: "Russia", KR: "South Korea",
-      JM: "Jamaica", BZ: "Belize", HN: "Honduras", MG: "Madagascar", UG: "Uganda", MY: "Malaysia",
-      LB: "Lebanon"
+      US:"United States", FR:"France", PT:"Portugal", TW:"Taiwan", IL:"Israel", MD:"Moldova",
+      AR:"Argentina", SA:"Saudi Arabia", NZ:"New Zealand", CA:"Canada", CM:"Cameroon",
+      GB:"United Kingdom", CR:"Costa Rica", LK:"Sri Lanka", LU:"Luxembourg", ES:"Spain",
+      SR:"Suriname", ZA:"South Africa", MX:"Mexico", CI:"Ivory Coast", PS:"Palestine",
+      TR:"Turkey", CL:"Chile", IQ:"Iraq", VN:"Vietnam", AL:"Albania", BD:"Bangladesh",
+      TN:"Tunisia", MA:"Morocco", CO:"Colombia", AM:"Armenia", NG:"Nigeria", RO:"Romania",
+      EG:"Egypt", NP:"Nepal", AT:"Austria", PK:"Pakistan", LY:"Libya", VE:"Venezuela",
+      PH:"Philippines", RU:"Russia", KR:"South Korea", JM:"Jamaica", BZ:"Belize",
+      HN:"Honduras", MG:"Madagascar", UG:"Uganda", MY:"Malaysia", LB:"Lebanon"
     };
 
-    // Convert country code -> emoji flag
-    function codeToFlag(code) {
-      if (!code) return "";
-      return code.toUpperCase().replace(/./g, c => 
-        String.fromCodePoint(127397 + c.charCodeAt())
-      );
+    function codeToFlag(code){
+      if(!code) return "";
+      return code.toUpperCase().replace(/./g,c=>String.fromCodePoint(127397+c.charCodeAt()));
     }
+
+    let allGrouped = {};
+    let allCountries = [];
+
+    function renderOffers(filterCountry=null){
+      const offersDiv=document.getElementById("offers");
+      offersDiv.innerHTML="";
+      Object.keys(allGrouped)
+        .sort((a,b)=>a.localeCompare(b))
+        .forEach(key=>{
+          allGrouped[key].forEach((offer,index)=>{
+            if(filterCountry && offer.countryName.toLowerCase()!==filterCountry.toLowerCase()) return;
+            const btn=document.createElement("a");
+            btn.className="btn";
+            btn.href=offer.offer_url;
+            btn.target="_blank";
+            btn.innerHTML=`<span class="flag">${offer.flag}</span> ${offer.countryName} (${offer.os}) (${index+1})`;
+            offersDiv.appendChild(btn);
+          });
+        });
+    }
+
+    function showAutocomplete(matches){
+      const box=document.getElementById("autocomplete");
+      box.innerHTML="";
+      if(matches.length===0){ box.style.display="none"; return; }
+      matches.forEach(country=>{
+        const div=document.createElement("div");
+        div.className="autocomplete-item";
+        div.textContent=country;
+        div.onclick=()=>{ 
+          document.getElementById("search").value=country;
+          box.style.display="none";
+          renderOffers(country);
+        };
+        box.appendChild(div);
+      });
+      box.style.display="block";
+    }
+
+    document.getElementById("search").addEventListener("input",e=>{
+      const val=e.target.value.toLowerCase();
+      if(!val){ renderOffers(); document.getElementById("autocomplete").style.display="none"; return; }
+      const matches=allCountries.filter(c=>c.toLowerCase().startsWith(val));
+      showAutocomplete(matches);
+    });
+
+    document.getElementById("search").addEventListener("keydown",e=>{
+      if(e.key==="Enter"){
+        const country=e.target.value;
+        renderOffers(country);
+        document.getElementById("autocomplete").style.display="none";
+      }
+    });
 
     // Load JSON
     fetch("csvjson.json")
-      .then(res => res.json())
-      .then(data => {
-        const offersDiv = document.getElementById("offers");
-        const grouped = {};
-
-        data.forEach(offer => {
-          const countryName = countryMap[offer.country_codes] || offer.country_codes;
-          const flag = codeToFlag(offer.country_codes);
-          const os = offer.device_type || "Unknown";
-          const key = countryName + " - " + os;
-
-          if (!grouped[key]) grouped[key] = [];
-          grouped[key].push({ ...offer, flag, countryName, os });
+      .then(res=>res.json())
+      .then(data=>{
+        allGrouped={};
+        data.forEach(offer=>{
+          const countryName=countryMap[offer.country_codes]||offer.country_codes;
+          const flag=codeToFlag(offer.country_codes);
+          const os=offer.device_type||"Unknown";
+          const key=countryName+" - "+os;
+          if(!allGrouped[key]) allGrouped[key]=[];
+          allGrouped[key].push({...offer,flag,countryName,os});
+          if(!allCountries.includes(countryName)) allCountries.push(countryName);
         });
+	// inside fetch(...)
+	data.forEach(offer=>{
+ 	 const countryName = countryMap[offer.country_codes] || offer.country_codes;
+ 	 const flag = codeToFlag(offer.country_codes);
 
-        // Sort countries alphabetically
-        Object.keys(grouped)
-          .sort((a, b) => a.localeCompare(b))
-          .forEach(key => {
-            grouped[key].forEach((offer, index) => {
-              const btn = document.createElement("a");
-              btn.className = "btn";
-              btn.href = offer.offer_url;
-              btn.target = "_blank";
-              btn.innerHTML = `<span class="flag">${offer.flag}</span> ${offer.countryName} (${offer.os}) (${index+1})`;
-              offersDiv.appendChild(btn);
-            });
-          });
+  	// normalize OS/device_type
+ 	 let os = offer.device_type || "Unknown";
+ 	 if (os.toLowerCase() === "ince") os = "Desktop";
+
+ 	 const key = countryName + " - " + os;
+  	if (!allGrouped[key]) allGrouped[key] = [];
+  	allGrouped[key].push({ ...offer, flag, countryName, os });
+
+ 	 if (!allCountries.includes(countryName)) allCountries.push(countryName);
+	});
+
+        renderOffers();
       });
   </script>
 </body>
