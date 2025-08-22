@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Offers Landing Page</title>
+  <title>CPA Offers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root{
       --bg: #f7fafc;
@@ -19,7 +19,7 @@
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:"Cairo", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      font-family:"Cairo", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
       background:
         radial-gradient(1200px 600px at 100% -20%, #eef2ff 10%, transparent 60%),
         radial-gradient(1000px 600px at -10% 120%, #f0f9ff 10%, transparent 60%),
@@ -29,10 +29,7 @@
       display:flex; align-items:center; justify-content:center;
       padding:24px;
     }
-    .wrap{
-      width:100%;
-      max-width:780px;
-    }
+    .wrap{ width:100%; max-width:780px; }
     .card{
       background:var(--card);
       border-radius:calc(var(--radius) + 6px);
@@ -40,35 +37,14 @@
       padding:28px;
       border:1px solid #e2e8f0;
     }
-    header{
-      text-align:center;
-      margin-bottom:20px;
-    }
-    h1{
-      margin:0 0 8px 0;
-      font-size:clamp(22px, 4.2vw, 34px);
-      font-weight:800;
-      letter-spacing:.2px;
-    }
-    p.lead{
-      margin:0 auto 6px;
-      color:var(--muted);
-      font-size:clamp(14px, 2.8vw, 16px);
-    }
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(1, 1fr);
-      gap:12px;
-      margin-top:16px;
-    }
-    @media (min-width:520px){
-      .grid{ grid-template-columns:repeat(2, 1fr); }
-    }
-    @media (min-width:860px){
-      .grid{ grid-template-columns:repeat(3, 1fr); }
-    }
+    header{text-align:center; margin-bottom:20px;}
+    h1{ margin:0 0 8px 0; font-size:clamp(22px, 4.2vw, 34px); font-weight:800; }
+    p.lead{ margin:0 auto 6px; color:var(--muted); font-size:clamp(14px, 2.8vw, 16px); }
+    .grid{ display:grid; grid-template-columns:repeat(1, 1fr); gap:12px; margin-top:16px; }
+    @media (min-width:520px){ .grid{ grid-template-columns:repeat(2, 1fr);} }
+    @media (min-width:860px){ .grid{ grid-template-columns:repeat(3, 1fr);} }
     a.btn{
-      display:flex; align-items:center; justify-content:space-between;
+      display:flex; align-items:center; justify-content:flex-start;
       gap:10px;
       text-decoration:none;
       background:var(--pastel);
@@ -80,113 +56,80 @@
       font-weight:700;
       letter-spacing:.2px;
       box-shadow:0 4px 14px rgba(15, 23, 42, .06);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     a.btn:hover{ background:var(--pastel-hover); border-color:#a5b4fc; transform:translateY(-1px) }
     a.btn:active{ transform:translateY(0) scale(.99) }
-    .badge{
-      font-size:12px;
-      font-weight:700;
-      padding:6px 10px;
-      background:#eef2ff;
-      border:1px solid #c7d2fe;
-      border-radius:999px;
-      color:#243b53;
-      white-space:nowrap;
-    }
-    .country{
-      display:flex; align-items:center; gap:10px;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    }
-    .flag{
-      width:20px; height:20px; border-radius:6px; background:#e2e8f0; display:inline-block;
-      box-shadow:inset 0 0 0 1px rgba(2,6,23,.06);
-    }
-    footer{
-      text-align:center; color:var(--accent); font-size:12px; margin-top:14px;
-    }
-    .filter{
-      margin-bottom:20px;
-      display:flex; justify-content:center;
-    }
-    select{
-      padding:10px;
-      font-size:16px;
-      border-radius:8px;
-      border:1px solid #c7d2fe;
-      background:var(--pastel);
-      color:#0b1324;
-      width:100%;
-      max-width:300px;
-    }
+    .flag{ font-size:18px; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
       <header>
-        <h1>Complete offers in your country to win prizes</h1>
-        <p class="lead">Choose your country and OS to get started</p>
+        <h1>Available Offers</h1>
+        <p class="lead">Choose your offer below</p>
       </header>
-      <div class="filter">
-        <select id="countryFilter" onchange="filterOffers()">
-          <option value="">Select a country</option>
-        </select>
-      </div>
-      <div class="grid" id="offerGrid"></div>
-      <footer>
-        <p>Powered by CPA Grip</p>
-      </footer>
+      <div id="offers" class="grid"></div>
     </div>
   </div>
+
   <script>
-    const offers = [
-      { id: 1, title: "Offer 1", link: "https://example.com/offer1", country: ["US", "CA", "UK"], payout: "$5.00", os: "Android" },
-      { id: 2, title: "Offer 2", link: "https://example.com/offer2", country: ["US", "AU"], payout: "$3.00", os: "iOS" },
-      { id: 3, title: "Offer 3", link: "https://example.com/offer3", country: ["UK", "FR"], payout: "$7.00", os: "Android|iOS" }
-    ];
-    let countries = new Set();
+    // Country code to name map
+    const countryMap = {
+      US: "United States", FR: "France", PT: "Portugal", TW: "Taiwan", IL: "Israel",
+      MD: "Moldova", AR: "Argentina", SA: "Saudi Arabia", NZ: "New Zealand", CA: "Canada",
+      CM: "Cameroon", GB: "United Kingdom", CR: "Costa Rica", LK: "Sri Lanka", LU: "Luxembourg",
+      ES: "Spain", SR: "Suriname", ZA: "South Africa", MX: "Mexico", CI: "Ivory Coast",
+      PS: "Palestine", TR: "Turkey", CL: "Chile", IQ: "Iraq", VN: "Vietnam", AL: "Albania",
+      BD: "Bangladesh", TN: "Tunisia", MA: "Morocco", CO: "Colombia", AM: "Armenia",
+      NG: "Nigeria", RO: "Romania", EG: "Egypt", NP: "Nepal", AT: "Austria", PK: "Pakistan",
+      LY: "Libya", VE: "Venezuela", PH: "Philippines", RU: "Russia", KR: "South Korea",
+      JM: "Jamaica", BZ: "Belize", HN: "Honduras", MG: "Madagascar", UG: "Uganda", MY: "Malaysia",
+      LB: "Lebanon"
+    };
 
-    function populateCountries() {
-      offers.forEach(offer => {
-        offer.country.forEach(c => countries.add(c));
-      });
-      const select = document.getElementById('countryFilter');
-      countries.forEach(country => {
-        const option = document.createElement('option');
-        option.value = country;
-        option.textContent = country;
-        select.appendChild(option);
-      });
+    // Convert country code -> emoji flag
+    function codeToFlag(code) {
+      if (!code) return "";
+      return code.toUpperCase().replace(/./g, c => 
+        String.fromCodePoint(127397 + c.charCodeAt())
+      );
     }
 
-    function displayOffers(offersToDisplay) {
-      const grid = document.getElementById('offerGrid');
-      grid.innerHTML = '';
-      offersToDisplay.forEach(offer => {
-        const offerElement = document.createElement('a');
-        offerElement.href = offer.link;
-        offerElement.className = 'btn';
-        offerElement.innerHTML = `
-          <div class="country">
-            <span class="flag"></span>
-            <span>${offer.title}</span>
-          </div>
-          <span class="badge">${offer.payout}</span>
-        `;
-        grid.appendChild(offerElement);
+    // Load JSON
+    fetch("csvjson.json")
+      .then(res => res.json())
+      .then(data => {
+        const offersDiv = document.getElementById("offers");
+        const grouped = {};
+
+        data.forEach(offer => {
+          const countryName = countryMap[offer.country_codes] || offer.country_codes;
+          const flag = codeToFlag(offer.country_codes);
+          const os = offer.device_type || "Unknown";
+          const key = countryName + " - " + os;
+
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push({ ...offer, flag, countryName, os });
+        });
+
+        // Sort countries alphabetically
+        Object.keys(grouped)
+          .sort((a, b) => a.localeCompare(b))
+          .forEach(key => {
+            grouped[key].forEach((offer, index) => {
+              const btn = document.createElement("a");
+              btn.className = "btn";
+              btn.href = offer.offer_url;
+              btn.target = "_blank";
+              btn.innerHTML = `<span class="flag">${offer.flag}</span> ${offer.countryName} (${offer.os}) (${index+1})`;
+              offersDiv.appendChild(btn);
+            });
+          });
       });
-    }
-
-    function filterOffers() {
-      const selectedCountry = document.getElementById('countryFilter').value;
-      const filteredOffers = selectedCountry
-        ? offers.filter(offer => offer.country.includes(selectedCountry))
-        : offers;
-      displayOffers(filteredOffers);
-    }
-
-    populateCountries();
-    displayOffers(offers);
   </script>
 </body>
 </html>
