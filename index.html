@@ -192,30 +192,22 @@
       .then(res=>res.json())
       .then(data=>{
         allGrouped={};
+        allCountries=[];
+
         data.forEach(offer=>{
-          const countryName=countryMap[offer.country_codes]||offer.country_codes;
-          const flag=codeToFlag(offer.country_codes);
-          const os=offer.device_type||"Unknown";
-          const key=countryName+" - "+os;
-          if(!allGrouped[key]) allGrouped[key]=[];
-          allGrouped[key].push({...offer,flag,countryName,os});
-          if(!allCountries.includes(countryName)) allCountries.push(countryName);
+          const countryName = countryMap[offer.country_codes] || offer.country_codes;
+          const flag = codeToFlag(offer.country_codes);
+
+          // normalize OS/device_type (replace "ince" with "Desktop")
+          let os = offer.device_type || "Unknown";
+          if (os.toLowerCase() === "ince") os = "Desktop";
+
+          const key = countryName + " - " + os;
+          if (!allGrouped[key]) allGrouped[key] = [];
+          allGrouped[key].push({ ...offer, flag, countryName, os });
+
+          if (!allCountries.includes(countryName)) allCountries.push(countryName);
         });
-	// inside fetch(...)
-	data.forEach(offer=>{
- 	 const countryName = countryMap[offer.country_codes] || offer.country_codes;
- 	 const flag = codeToFlag(offer.country_codes);
-
-  	// normalize OS/device_type
- 	 let os = offer.device_type || "Unknown";
- 	 if (os.toLowerCase() === "ince") os = "Desktop";
-
- 	 const key = countryName + " - " + os;
-  	if (!allGrouped[key]) allGrouped[key] = [];
-  	allGrouped[key].push({ ...offer, flag, countryName, os });
-
- 	 if (!allCountries.includes(countryName)) allCountries.push(countryName);
-	});
 
         renderOffers();
       });
